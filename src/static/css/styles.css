@@ -1,0 +1,277 @@
+/* LatheMind Custom Styles - Glassmorphism Edition */
+
+/* Global Body Background */
+body {
+    background: radial-gradient(circle at top left, #1e1e2f, #0f0f16);
+    background-attachment: fixed;
+    color: #e0e6ed;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* HTMXローディングインジケーター */
+.htmx-indicator {
+    display: none;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+    pointer-events: none;
+}
+
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator,
+.htmx-indicator.htmx-request {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Glass Panel Effect */
+.glass-panel {
+    background: rgba(30, 30, 40, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
+    /* Slightly more rounded */
+}
+
+/* Header & Footer Glass */
+.glass-header {
+    background: rgba(20, 20, 30, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-footer {
+    background: rgba(20, 20, 30, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* NCコードビューア */
+.nc-code-viewer {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    background-color: rgba(10, 10, 15, 0.8);
+    /* Darker, semi-transparent */
+    color: #e6edf3;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow: auto;
+    max-height: 400px;
+    white-space: pre;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.nc-code-viewer .line-number {
+    color: #555;
+    user-select: none;
+    padding-right: 1rem;
+    text-align: right;
+    display: inline-block;
+    min-width: 2.5rem;
+}
+
+.nc-code-viewer .g-code {
+    color: #89ddff;
+}
+
+.nc-code-viewer .m-code {
+    color: #f78c6c;
+}
+
+.nc-code-viewer .comment {
+    color: #676e95;
+    font-style: italic;
+}
+
+.nc-code-viewer .program-number {
+    color: #c792ea;
+    font-weight: bold;
+}
+
+/* ファイルアップロードエリア */
+.upload-area-active {
+    border-color: #89ddff !important;
+    background-color: rgba(60, 160, 255, 0.1) !important;
+}
+
+/* ボタンスタイル */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.btn-primary:disabled {
+    background: #334155;
+    color: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1.2rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* 入力フィールド - Glassy Inputs */
+.input-field,
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+    background-color: rgba(20, 20, 30, 0.6);
+    color: #f1f5f9;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.6rem 1rem;
+    width: 100%;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.input-field:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #60a5fa;
+    background-color: rgba(30, 30, 45, 0.8);
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
+}
+
+::placeholder {
+    color: #64748b;
+}
+
+/* Tags */
+.tag {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    /* Pill shape */
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.tag-blue {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.tag-green {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* アラート - Glassy Alerts */
+.alert {
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(8px);
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: #86efac;
+}
+
+.alert-warning {
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.2);
+    color: #fde047;
+}
+
+.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* スクロールバー */
+.nc-code-viewer::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.nc-code-viewer::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.nc-code-viewer::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.nc-code-viewer::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 1024px) {
+    .nc-code-viewer {
+        max-height: 300px;
+    }
+}

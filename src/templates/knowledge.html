@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}知識ベース管理 - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- 左カラム: サンプル一覧 -->
+    <div class="glass-panel p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-white">サンプル一覧</h2>
+            <button onclick="document.getElementById('add-modal').classList.remove('hidden')"
+                class="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">
+                + 追加
+            </button>
+        </div>
+
+        <div id="sample-list" hx-get="/api/knowledge/list/html" hx-trigger="load" hx-swap="innerHTML">
+            <div class="text-center py-8 text-gray-400">
+                <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mx-auto">
+                </div>
+                <p class="mt-2">読み込み中...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 中央・右カラム: サンプル詳細 -->
+    <div class="lg:col-span-2 glass-panel p-6">
+        <h2 class="text-lg font-bold text-white mb-4">サンプル詳細</h2>
+
+        <div id="sample-detail">
+            <div class="text-center py-12 text-gray-400">
+                <svg class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <p class="mt-4">左のリストからサンプルを選択してください</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- サンプル追加モーダル -->
+<div id="add-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-white">サンプルを追加</h3>
+                <button onclick="document.getElementById('add-modal').classList.add('hidden')"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="add-sample-form" hx-post="/api/knowledge" hx-target="#sample-list" hx-swap="innerHTML"
+                hx-encoding="multipart/form-data"
+                hx-on::after-request="if(event.detail.successful) { document.getElementById('add-modal').classList.add('hidden'); htmx.trigger('#sample-list', 'load'); }">
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">サンプルID</label>
+                        <input type="text" name="sample_id" required class="input-field" placeholder="sample_002">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">サンプル名</label>
+                        <input type="text" name="sample_name" required class="input-field" placeholder="外径仕上げ_SUS304">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">加工タイプ</label>
+                        <select name="process_type" required class="input-field">
+                            <option value="roughing">荒加工</option>
+                            <option value="finishing">仕上げ</option>
+                            <option value="threading">ねじ切り</option>
+                            <option value="drilling">穴あけ</option>
+                            <option value="grooving">溝入れ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">材質</label>
+                        <select name="material" required class="input-field">
+                            <option value="SUS304">SUS304</option>
+                            <option value="SUS316">SUS316</option>
+                            <option value="S45C">S45C</option>
+                            <option value="A5052">A5052</option>
+                            <option value="C3604">C3604</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">回転数 (rpm)</label>
+                        <input type="number" name="spindle_speed" required class="input-field" value="1200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">送り (mm/rev)</label>
+                        <input type="number" name="feed_rate" step="0.01" required class="input-field" value="0.15">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-1">タグ（カンマ区切り）</label>
+                    <input type="text" name="tags" class="input-field" placeholder="外径, 仕上げ, φ20">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-1">NCプログラム</label>
+                    <textarea name="nc_code" rows="10" required class="input-field font-mono text-green-400"
+                        placeholder="O0001&#10;(コメント)&#10;..."></textarea>
+                </div>
+
+                <div class="mb-6">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">図面画像（任意）</label>
+                        <input type="file" name="drawing" accept="image/*" class="input-field">
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="document.getElementById('add-modal').classList.add('hidden')"
+                            class="btn-secondary">
+                            キャンセル
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            追加
+                        </button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
