@@ -1,6 +1,6 @@
 """
 LatheMind アプリケーション起動スクリプト
-使用方法: py -3.12 run.py
+使用方法: py -3.13 run.py
 """
 import uvicorn
 
