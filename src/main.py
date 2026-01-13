@@ -85,3 +85,16 @@ async def knowledge_page(request: Request):
             "app_name": settings.app_name
         }
     )
+
+
+@app.get("/process", response_class=HTMLResponse)
+async def process_page(request: Request):
+    """工程管理ページを表示"""
+    return templates.TemplateResponse(
+        "process.html",
+        {
+            "request": request,
+            "app_name": settings.app_name,
+            "cincom_model": settings.cincom_model
+        }
+    )

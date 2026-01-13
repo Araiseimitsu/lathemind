@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}工程管理 - {{ app_name }}{% endblock %}
+
+{% block head %}
+<style>
+    .operation-row:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .operation-input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        width: 100%;
+        transition: all 0.2s;
+    }
+
+    .operation-input:focus {
+        outline: none;
+        border-color: rgba(59, 130, 246, 0.8);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .drop-zone {
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 0.75rem;
+        transition: all 0.3s;
+    }
+
+    .drop-zone.dragover {
+        border-color: rgba(59, 130, 246, 0.8);
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+    .drop-zone.has-file {
+        border-color: rgba(34, 197, 94, 0.8);
+        background: rgba(34, 197, 94, 0.1);
+    }
+
+    .section-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .table-header {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .loading-spinner {
+        display: none;
+    }
+
+    .loading-spinner.active {
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- ページヘッダー -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-white">工程管理</h2>
+            <p class="text-gray-400 mt-1">XLSX工程管理表のアップロード・編集</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button id="btn-reload" class="btn-secondary px-4 py-2 rounded-lg text-white flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <span>再読込</span>
+            </button>
+            <button id="btn-save" class="btn-primary px-4 py-2 rounded-lg text-white flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>保存</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- アップロードエリア -->
+    <div class="section-card p-6">
+        <div id="drop-zone" class="drop-zone p-8 text-center cursor-pointer">
+            <input type="file" id="file-input" accept=".xlsx,.xls" class="hidden">
+            <svg class="w-12 h-12 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+            <p class="text-gray-400 mb-2">XLSXファイルをドラッグ&ドロップ</p>
+            <p class="text-gray-500 text-sm">またはクリックしてファイルを選択</p>
+            <p id="file-name" class="text-blue-400 mt-2 hidden"></p>
+        </div>
+    </div>
+
+    <!-- メッセージエリア -->
+    <div id="message-area" class="hidden">
+        <div id="message-content" class="p-4 rounded-lg"></div>
+    </div>
+
+    <!-- 工程データエリア -->
+    <div id="operations-container" class="hidden space-y-6">
+        <!-- 正面側工程 -->
+        <div class="section-card overflow-hidden">
+            <div class="table-header px-6 py-3">
+                <h3 class="text-lg font-semibold text-white">正面側工程</h3>
+            </div>
+            <div class="p-4 overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-gray-400 text-sm">
+                            <th class="text-left py-2 px-3 w-16">No.</th>
+                            <th class="text-left py-2 px-3">補正番号</th>
+                            <th class="text-left py-2 px-3">ツール番号</th>
+                            <th class="text-left py-2 px-3">工程名</th>
+                            <th class="text-left py-2 px-3 w-20"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="front-operations-body" class="text-gray-300">
+                        <!-- 動的に生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 背面側工程 -->
+        <div class="section-card overflow-hidden">
+            <div class="table-header px-6 py-3">
+                <h3 class="text-lg font-semibold text-white">背面側工程</h3>
+            </div>
+            <div class="p-4 overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-gray-400 text-sm">
+                            <th class="text-left py-2 px-3 w-16">No.</th>
+                            <th class="text-left py-2 px-3">補正番号</th>
+                            <th class="text-left py-2 px-3">ツール番号</th>
+                            <th class="text-left py-2 px-3">工程名</th>
+                            <th class="text-left py-2 px-3 w-20"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="back-operations-body" class="text-gray-300">
+                        <!-- 動的に生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 空状態 -->
+    <div id="empty-state" class="section-card p-12 text-center">
+        <svg class="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <p class="text-gray-500">工程データがありません</p>
+        <p class="text-gray-600 text-sm mt-1">XLSXファイルをアップロードしてください</p>
+    </div>
+</div>
+
+<!-- ローディングオーバーレイ -->
+<div id="loading-overlay" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="glass-card p-6 rounded-xl text-center">
+        <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+        <p class="text-white">処理中...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/process.js?v=1.0"></script>
+{% endblock %}
